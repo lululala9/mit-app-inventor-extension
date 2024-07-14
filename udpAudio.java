@@ -86,7 +86,7 @@ public class callUdp extends AndroidNonvisibleComponent {
     public void MuteSpeakers() {
         speakers = false;
     }
-/*
+
     @SimpleFunction(description = "Set the port for sending audio data")
     public void SetSendPort(int port) {
         this.sendPort = port;
@@ -98,7 +98,7 @@ public class callUdp extends AndroidNonvisibleComponent {
         this.receivePort = port;
         Log.i(LOG_TAG, "Receive port set to: " + port);
     }
-*/
+
     private void startMic() {
         mic = true;
         new Thread(new MicRunnable()).start();
