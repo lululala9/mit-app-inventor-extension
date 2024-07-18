@@ -149,3 +149,31 @@ public class callUdp extends AndroidNonvisibleComponent {
     }
 
     private class SpeakerRunnable implements Runnable {
+        @Override
+        public void run() {
+            Log.i(LOG_TAG, "Speaker thread started. Thread id: " + Thread.currentThread().getId());
+            AudioTrack track = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLE_RATE, AudioFormat.CHANNEL_OUT_MONO,
+                    AudioFormat.ENCODING_PCM_16BIT, BUF_SIZE, AudioTrack.MODE_STREAM);
+            track.play();
+            try {
+                DatagramSocket socket = new DatagramSocket(receivePort);
+                byte[] buf = new byte[BUF_SIZE];
+                while (speakers) {
+                    DatagramPacket packet = new DatagramPacket(buf, BUF_SIZE);
+                    socket.receive(packet);
+                    Log.i(LOG_TAG, "Packet received: " + packet.getLength());
+                    track.write(packet.getData(), 0, packet.getLength());
+                }
+                socket.disconnect();
+                socket.close();
+                track.stop();
+                track.flush();
+                track.release();
+                speakers = false;
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Speaker thread IOException: " + e.toString());
+                speakers = false;
+            }
+        }
+    }
+}
